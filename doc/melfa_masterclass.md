@@ -17,7 +17,9 @@ MELSOFT RT Toolbox3 creates a system simulation of the RV-5AS collaborative robo
 
 Ensure that your Ubuntu and Windows10 devices are connected to the same LAN.
 
-Ensure that your Windows10 device is able to ping your Ubuntu device. Your Ubuntu device may not be able to ping your Windows10 device due to certain Windows firewall configurations. If your Windows10 device is able to ping your Ubuntu device, your devices are connected.
+Ensure that your Windows10 device is able to ping your Ubuntu device. Your Ubuntu device may not be able to ping your Windows10 device due to some Windows firewall configurations. If your Windows10 device is able to ping your Ubuntu device, your devices are connected.
+
+Refer to [RT Toolbox3 Simulator Setup](./../../melfa_ros2_driver-1.0.4/doc/rt_sim_setup.md) to set up connection to MELSOFT RT Simulator. This link will work if melfa_ros2_driver is in the same workspace
 
 ### 2. Launch MELFA ROS2 Driver [Terminal 1]
 
@@ -88,7 +90,7 @@ In the GX Works3 window, select [Online]&#8594;[Monitor]&#8594;[Device/Buffer Me
 
 In the new tab, enter "x0" in [Device Name].
 
-You can toggle the "x#" devices by double-clicking them. Do note that only "x0" to "x7" are mapped to the plc_ node is this tutorial.
+You can toggle the x memory addresses by double-clicking them. Do note that only "x0" to "x7" are mapped to the plc_ node is this tutorial. 
 
 The state of the sensors are reflected in GT Simulator. [X0], [x1], [x2] &#8594; [SLP3], [Front], [Right].
 
@@ -125,7 +127,7 @@ For this tutorial only the first 3 sensors are used.
 
 #### Explanation
 
-These sensors mimic a set of optical sensors. The sensor states are communicated to the MELFA robot via CC-Link IE Field Basic industrial protocol. These sensor states are then communicated to MELFA ROS2 Driver via "misc1_io" controller. Each MELFA ROS2 Driver I/O controllers have a 16-bit bus. The "misc1_io" controller is reading a 16-bit integer from the robot controller, which is reflected when the following command is ran. However, in the node "plc_", only the first 8 bits are allocated to SensorState.msg.
+These sensors mimic a set of optical sensors. The sensor states are communicated to the MELFA robot via a simulated CC-Link IE Field Basic industrial protocol. These sensor states are communicated to MELFA ROS2 Driver via "misc1_io" controller. Each MELFA ROS2 Driver I/O controllers have a 16-bit bus. The "misc1_io" controller is reading a 16-bit integer from the robot controller, which is reflected when the following command is ran. However, in the node "plc_", only the first 8 bits are allocated to SensorState.msg.
 
 Run the following command to observe I/O communication for the sensors.
 ```
@@ -148,7 +150,7 @@ input_data: 7
 output_data: 0
 ---
 ```
-In this example, the integer '7' is representing 0b111 which are the states of the first 3 sensors.
+In this example, the integer '7' is representing 0b111 which are the states of the first 3 sensors. MELFA ROS2 Driver I/O controllers are 16-bit interfaces, therefore only x0~x7,x10~x17 are read by misc1_io.
 
 
 
@@ -192,7 +194,7 @@ dsi_8: true
 
 The safety states are read directly from MELFA robot via MELFA ROS2 Driver "safety_io" controller. Safety states are activated by default in accordance to industry standards. The GX Simulator disables the safety states via a simulated 24VDC wired relay and activates the safety states when the corresponding push buttons are toggled on GT Simulator. 
 
-The "safety_io" controller is reading a 16-bit integer from the robot controller, which is reflected when the following command is ran.
+The "safety_io" controller is reading a 16-bit integer from the robot controller, which is reflected when the following command is executed.
 ```
 # Terminal 4
 
@@ -314,7 +316,7 @@ In the right data block, a similar number but round off to the nearest 100 will 
 
 #### Explanation
 
-The left data block is an input block that assigns a value to memory. This memory address is communicated to MELFA robot and read by MELFA ROS2 Driver in "misc3_io" controller. The hmi_ node reads the state of this controller and either rounds up or down the value to the nearest 100. The rounded value is written back into MELFA robot, communicated to GT Simulator and displayed in the right data block.
+The left data block is an input block that assigns a value to memory. This data is mapped to MELFA robot and read by MELFA ROS2 Driver in "misc3_io" controller. The hmi_ node reads the state of this controller and either rounds up or down the value to the nearest 100. The rounded value is written back into MELFA robot, communicated to GT Simulator and displayed in the right data block.
 
 The MELFA ROS2 Driver uses the rtexc API from the MELFA Ethernet SDK which allows the external device to write to output and read from input of the same address in one cycle.
 
@@ -340,6 +342,14 @@ output_data: 0
 ---
 ```
 Do note that "output_data: 0" is not accurate as the "plc_link_io" is not reading output data. Therefore, it remains at the initial value of "0". 
+
+Possible applications that may require this:
+
+1. MELFA ROS2 reads the encoder position of a motor from a PLC and writes an analog value to the PLC to adjust the speed of the motor.
+
+2. MELFA ROS2 reads proximity distance data from an ultrasonic sensor from a PLC and writes an analog data to a PLC to adjust a PWM analog output.
+
+3. Low frequency PID loop in ROS2. MELFA ROS2 reads position data from a PLC and writes effort data to the PLC to adjust PWM output. This is not recommended as PLC in-built PID functions are usually more robust and better performing.
 
 ## __3. Simple MELFA ROS2 Application with MELSOFT Simulators__
 

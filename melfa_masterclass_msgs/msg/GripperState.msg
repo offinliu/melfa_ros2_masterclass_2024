@@ -14,6 +14,8 @@
 #    Contributor(s):
 #       Liu Muyao
 
+# This is a sample meesage for managing hand_io from MELFA. Some robots have more hand_io than others. 
+
 # mapped from GripperCommand
 bool double_solenoid
 

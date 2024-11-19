@@ -14,6 +14,8 @@
 #    Contributor(s):
 #       Liu Muyao
 
+# This is a sample message for MELFA safety_io. All MELFA robots have the same number of pairs of dedicted safety inputs.
+
 bool dsi_1
 bool dsi_2
 bool dsi_3

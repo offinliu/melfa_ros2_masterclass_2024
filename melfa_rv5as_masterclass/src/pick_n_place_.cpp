@@ -19,8 +19,6 @@
 
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
-#include <moveit_msgs/msg/display_robot_state.hpp>
-#include <moveit_msgs/msg/display_trajectory.hpp>
 #include <moveit_msgs/msg/attached_collision_object.hpp>
 #include <moveit_msgs/msg/collision_object.hpp>
 
@@ -239,10 +237,6 @@ int main(int argc, char** argv)
     gripper.primitives.push_back(cylinder);
     gripper.primitive_poses.push_back(cylinder_pose);
     gripper.operation = gripper.ADD;
-    gripper.subframe_names.resize(1);
-    gripper.subframe_poses.resize(1);
-    gripper.subframe_names[0] = "tcp";
-    gripper.subframe_poses[0].position.z = 0.168 / 2.0;
 
     std::vector<std::string> touch_links;
     touch_links.push_back(FLANGE_FRAME_ID);
@@ -578,7 +572,6 @@ int main(int argc, char** argv)
     switch (task_command_)
     {
       case 0b01:
-        pid_ = getppid();
         RCLCPP_INFO(LOGGER, "start task");
         startTask();
         start_flag_ = true;
@@ -611,7 +604,7 @@ int main(int argc, char** argv)
     // Lower speed when DSI_1 is active
     if (safety_state_.DSI_1 && !dsi_1_flag_)
     {
-      move_group.setMaxVelocityScalingFactor(0.07);
+      move_group.setMaxVelocityScalingFactor(0.05);
       move_group.setMaxAccelerationScalingFactor(0.1);
       dsi_1_flag_ = true;
     }

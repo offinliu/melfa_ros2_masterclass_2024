@@ -14,6 +14,8 @@
 #    Contributor(s):
 #       Liu Muyao
 
+# This is a sample message that maps PLC inputs to a sensor boolean variable.
+
 bool sensor_0
 bool sensor_1
 bool sensor_2
